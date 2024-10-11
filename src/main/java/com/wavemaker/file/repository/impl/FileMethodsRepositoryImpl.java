@@ -28,54 +28,38 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
 
     @Override
     public boolean readInFile() {
-        BufferedReader bufferedReader = null;
         boolean isRead = false;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
-
             }
             isRead = true;
-
         } catch (IOException e) {
-
             throw new FileReadException("Error reading details from file", 500);
-        } finally {
-            closeBufferedReader(bufferedReader);
         }
         return isRead;
-
     }
 
     @Override
     public boolean writeInFile(String text) {
         boolean isWrite = false;
-        BufferedWriter bufferedWriter = null;
-        try {
-            bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))) {
             bufferedWriter.write(text);
             isWrite = true;
-
         } catch (IOException e) {
-
-            throw new FileWriteException("Error writing details from file", 500);
-        } finally {
-            closeBufferedWriter(bufferedWriter);
+            throw new FileWriteException("Error writing details to file", 500);
         }
         return isWrite;
     }
 
     @Override
     public List<CharacterSearchResult> getCharacterSearchDetailsInFile(char charSearch) {
-        CharacterSearchResult characterSearchResult = null;
-        List<CharacterSearchResult> listOfcharacterSearchResult = new ArrayList<>();
-        BufferedReader bufferedReader = null;
+        List<CharacterSearchResult> listOfCharacterSearchResult = new ArrayList<>();
         int currentLineNumber = 0;
         int position = 0;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 currentLineNumber++;
@@ -83,24 +67,21 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                 for (char ch : line.toCharArray()) {
                     position++;
                     if (ch == charSearch) {
-                        characterSearchResult = new CharacterSearchResult();
+                        CharacterSearchResult characterSearchResult = new CharacterSearchResult();
                         characterSearchResult.setCharToSearch(charSearch);
                         characterSearchResult.setFileName(file.getName());
                         characterSearchResult.setFilePath(file.getPath());
                         characterSearchResult.setLineNumber(currentLineNumber);
                         characterSearchResult.setLinePosition(position);
-                        listOfcharacterSearchResult.add(characterSearchResult);
+                        listOfCharacterSearchResult.add(characterSearchResult);
                     }
                 }
-
             }
         } catch (IOException e) {
             throw new FileReadException("Error reading details from file", 500);
-        } finally {
-            closeBufferedReader(bufferedReader);
         }
 
-        return listOfcharacterSearchResult;
+        return listOfCharacterSearchResult;
     }
 
     @Override
@@ -115,15 +96,14 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
 
     @Override
     public List<StringSearchResult> getStringSearchDetailsInFile(String stringSearch) {
-        StringSearchResult stringSearchResult = null;
         List<StringSearchResult> listOfStringSearchResult = new ArrayList<>();
         int currentLineNumber = 0;
-        BufferedReader bufferedReader = null;
+
         if (stringSearch.isEmpty()) {
             return listOfStringSearchResult;
         }
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 currentLineNumber++;
@@ -131,7 +111,7 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                 String lineContent = line.toLowerCase();
                 String searchString = stringSearch.toLowerCase();
                 while ((index = lineContent.indexOf(searchString, index)) != -1) {
-                    stringSearchResult = new StringSearchResult();
+                    StringSearchResult stringSearchResult = new StringSearchResult();
                     stringSearchResult.setStringName(stringSearch);
                     stringSearchResult.setFileName(file.getName());
                     stringSearchResult.setFilePath(file.getPath());
@@ -139,14 +119,12 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                     stringSearchResult.setLinePosition(index + 1);
                     listOfStringSearchResult.add(stringSearchResult);
                     index++;
-
                 }
             }
         } catch (IOException e) {
             throw new FileReadException("Error reading details from file", 500);
-        } finally {
-            closeBufferedReader(bufferedReader);
         }
+
         return listOfStringSearchResult;
     }
 
@@ -159,7 +137,6 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
             System.err.println("Error reading directory: " + e.getMessage());
         }
         return listOfWordSearchResult;
-
     }
 
     private void searchWordInAllFilesAndDirectory(Path directory, String wordSearch, List<WordSearchResult> listOfWordSearchResult) throws IOException {
@@ -168,24 +145,21 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                 if (Files.isRegularFile(path)) {
                     getWordDetailsInFile(new File(String.valueOf(path)), wordSearch, listOfWordSearchResult);
                 }
-
             }
         } catch (IOException e) {
             System.err.println("Error reading directory: " + e.getMessage());
         }
-
     }
 
     private void getWordDetailsInFile(File file, String wordSearch, List<WordSearchResult> listOfWordSearchResult) {
         int currentLineNumber = 0;
         int position = 0;
-        BufferedReader bufferedReader = null;
-        WordSearchResult wordSearchResult = null;
+
         if (wordSearch.isEmpty()) {
             return;
         }
-        try {
-            bufferedReader = new BufferedReader(new FileReader(String.valueOf(file)));
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 currentLineNumber++;
@@ -193,7 +167,7 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                 String lineContent = line.toLowerCase();
                 String searchWord = wordSearch.toLowerCase();
                 while ((position = lineContent.indexOf(searchWord, position)) != -1) {
-                    wordSearchResult = new WordSearchResult();
+                    WordSearchResult wordSearchResult = new WordSearchResult();
                     wordSearchResult.setWord(wordSearch);
                     wordSearchResult.setFileName(file.getName());
                     wordSearchResult.setFilePath(file.getPath());
@@ -201,36 +175,10 @@ public class FileMethodsRepositoryImpl implements FileMethodsRepository {
                     wordSearchResult.setLinePosition(position + 1);
                     listOfWordSearchResult.add(wordSearchResult);
                     position++;
-
                 }
             }
         } catch (IOException e) {
             throw new FileReadException("Error reading details from file", 500);
-        } finally {
-            closeBufferedReader(bufferedReader);
-        }
-
-    }
-
-    private void closeBufferedReader(BufferedReader reader) {
-        if (reader != null) {
-            try {
-                reader.close();
-                logger.debug("BufferedReader closed successfully");
-            } catch (IOException e) {
-                logger.error("Failed to close BufferedReader", e);
-            }
-        }
-    }
-
-    private void closeBufferedWriter(BufferedWriter writer) {
-        if (writer != null) {
-            try {
-                writer.close();
-                logger.debug("BufferedWriter closed successfully");
-            } catch (IOException e) {
-                logger.error("Failed to close BufferedWriter", e);
-            }
         }
     }
 }
