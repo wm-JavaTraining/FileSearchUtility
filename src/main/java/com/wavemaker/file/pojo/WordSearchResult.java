@@ -3,11 +3,11 @@ package com.wavemaker.file.pojo;
 import java.util.Objects;
 
 public class WordSearchResult implements Comparable<WordSearchResult> {
-    String word;
-    String fileName;
-    String filePath;
-    int lineNumber;
-    int  linePosition;
+    private String word;
+    private String fileName;
+    private String filePath;
+    private int lineNumber;
+    private int linePosition;
 
     public String getWord() {
         return word;
@@ -72,8 +72,6 @@ public class WordSearchResult implements Comparable<WordSearchResult> {
                 ", linePosition=" + linePosition +
                 '}';
     }
-
-
 
     @Override
     public int compareTo(WordSearchResult obj) {

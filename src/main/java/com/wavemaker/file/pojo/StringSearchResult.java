@@ -3,11 +3,11 @@ package com.wavemaker.file.pojo;
 import java.util.Objects;
 
 public class StringSearchResult {
-    String stringName;
-    String fileName;
-    String filePath;
-    int lineNumber;
-    int  linePosition;
+    private String stringName;
+    private String fileName;
+    private String filePath;
+    private int lineNumber;
+    private int linePosition;
 
     public String getStringName() {
         return stringName;

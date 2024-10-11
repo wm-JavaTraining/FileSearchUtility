@@ -3,11 +3,11 @@ package com.wavemaker.file.pojo;
 import java.util.Objects;
 
 public class CharacterSearchResult {
-    char charToSearch;
-    String fileName;
-    String filePath;
-    int lineNumber;
-    int  linePosition;
+    private char charToSearch;
+    private String fileName;
+    private String filePath;
+    private int lineNumber;
+    private int linePosition;
 
     public char getCharToSearch() {
         return charToSearch;
